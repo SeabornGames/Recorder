@@ -16,6 +16,7 @@
 """
 import time
 import inspect
+from seaborn.meta.calling_function import function_arguments
 
 
 class SeabornRecorder:
@@ -107,8 +108,19 @@ class AccessRecord:
         self.parent_recorder = parent_recorder
         self.group = group
         self.name = name
-        self.args = args
-        self.kwargs = kwargs
+
+        obj = getattr(parent_recorder.seaborn_obj, name)
+
+        if group == 'set':
+            self.kwargs['value'] = args[0]
+        elif group == 'get':
+            self.kwargs = {}
+        else:
+            func = getattr(parent_recorder.seaborn_obj, name)
+            func_args = function_arguments(func).args
+            self.kwargs = {func_args[i]: args[i] for i in range(1, len(args))}
+            self.kwargs.update(kwargs)
+
         self._exception = None
         self._response = None
         self.end = None

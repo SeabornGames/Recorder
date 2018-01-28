@@ -1,5 +1,5 @@
 from seaborn.recorder.recorder import SeabornRecorder
-from seaborn.calling_function.calling_function import *
+from seaborn.meta.calling_function import *
 
 
 class TestRecorder(SeabornRecorder):
@@ -30,6 +30,7 @@ class TestRecorder(SeabornRecorder):
 
         if shared_test_log is None:
             shared_test_log = []
+
         class CustomRecorder(cls):
             SEABORN_NAME = name or obj.__name__
             SEABORN_RECORDED_OBJ = obj
