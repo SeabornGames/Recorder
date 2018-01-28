@@ -9,7 +9,7 @@ setup(
     author='Ben Christenson',
     author_email='Python@BenChristenson.com',
     url='https://github.com/SeabornGames/SeabornRecorder',
-    install_requires=['seaborn-calling-function'],
+    install_requires=[],
     extras_require={
     },
     packages=['seaborn.recorder'],

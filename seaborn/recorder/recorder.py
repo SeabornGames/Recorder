@@ -25,17 +25,18 @@ class SeabornRecorder:
     SEABORN_INSTANCE = None
     SEABORN_ACCESS_LOG = []
     SEABORN_INIT_OBJS = []
+    SEABORN_OBJ = None
 
     def __init__(self,*args, **kwargs):
         attribute_recorder = AccessRecord(self, '__init__', 'init',
                                                 *args, **kwargs)
         if 'seaborn_recorder_obj' in kwargs: # needed for cloning
-            self.obj = kwargs['seaborn_recorder_obj']
+            self.SEABORN_OBJ = kwargs['seaborn_recorder_obj']
             return
-
-        self.obj = self.RECORDED_OBJ(*args, **kwargs)
-        attribute_recorder.response = self.obj
-        self.SEABORN_INIT_OBJS.append(self.obj)
+        obj = self.SEABORN_RECORDED_OBJ(*args, **kwargs)
+        self.SEABORN_OBJ = obj
+        attribute_recorder.response = self.SEABORN_OBJ
+        self.SEABORN_INIT_OBJS.append(self.SEABORN_OBJ)
         if self.is_recorded_for_seaborn_recorder(attribute_recorder):
             self.SEABORN_ACCESS_LOG.append(attribute_recorder)
 
@@ -51,7 +52,7 @@ class SeabornRecorder:
     def __getattr__(self, item):
         attribute_recorder = AccessRecord(self, 'get', item)
         try:
-            ret = getattr(self.obj, item, None)
+            ret = getattr(self.SEABORN_OBJ, item, None)
         except Exception as ex:
             attribute_recorder.exception = ex
             raise
@@ -61,7 +62,7 @@ class SeabornRecorder:
     def __setattr__(self, name, value):
         attribute_recorder = AccessRecord(self, 'set', name, value)
         try:
-            setattr(self.obj, name, value)
+            setattr(self.SEABORN_OBJ, name, value)
         except Exception as ex:
             attribute_recorder.exception = ex
             raise
@@ -131,7 +132,7 @@ class AccessRecord:
     def response(self, value):
         self._response = value
         self.end = time.time()
-        if self.parent_recorder.is_call_recoreded(self):
+        if self.parent_recorder.is_recorded_for_seaborn_recorder(self):
             self.parent_recorder.SEABORN_ACCESS_LOG.append(self)
 
     @property
@@ -142,7 +143,7 @@ class AccessRecord:
     def exception(self, value):
         self._exception = value
         self.end = time.time()
-        if self.parent_recorder.is_call_recoreded(self):
+        if self.parent_recorder.is_recorded_for_seaborn_recorder(self):
             self.parent_recorder.SEABORN_ACCESS_LOG.append(self)
 
     @property
