@@ -37,8 +37,6 @@ class SeabornRecorder:
         self.SEABORN_OBJ = obj
         attribute_recorder.response = self.SEABORN_OBJ
         self.SEABORN_INIT_OBJS.append(self.SEABORN_OBJ)
-        if self.is_recorded_for_seaborn_recorder(attribute_recorder):
-            self.SEABORN_ACCESS_LOG.append(attribute_recorder)
 
     @staticmethod
     def is_recorded_for_seaborn_recorder(attribute_recorder):
