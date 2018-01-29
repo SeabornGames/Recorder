@@ -12,10 +12,11 @@ def generate_calls(recorder, obj_name = 'subject'):
                         ','.join(['%s=%s'%(k,v)
                                   for k, v in kwargs[i].items()])]))
             for i in range(len(recorder.SEABORN_ACCESS_LOG))]
-    absent = [',)','(,']
+    absent = '(,)'
     for i in range(len(ret)):
         for j in [0,1]:
-            ret[i] = ret[i].replace(absent[j],absent[j][1-j])
+            ret[i] = ret[i].replace(absent[j:j+2],
+                                    absent[j:j+2][j])
         ret[i] = ret[i].replace('.init','')
     return ret
 
@@ -68,7 +69,7 @@ class TestRecorder(unittest.TestCase):
         self.assertListEqual(['init(1)', 'b(2)', 'b()'],result)
 
     def test_mem_func(self):
-        self.assertEqual("Hello, 2!",self.subject.hello_world(b=2))
+        self.assertEqual("Hello, 2!",self.subject.hello_world(2))
         result = [str(i) for i in self.klass.SEABORN_ACCESS_LOG]
         self.assertListEqual(
             ['init(1)', 'hello_world()', 'hello_world(2)'],result)
