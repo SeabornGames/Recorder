@@ -2,6 +2,24 @@ from seaborn.recorder.recorder import *
 import unittest
 
 
+def generate_calls(recorder, obj_name = 'subject'):
+    calls = [record.name for record in recorder.SEABORN_ACCESS_LOG]
+    args = [record.args for record in recorder.SEABORN_ACCESS_LOG]
+    kwargs = [record.kwargs for record in recorder.SEABORN_ACCESS_LOG]
+    ret = ["%s.%s(%s)"%(obj_name,calls[i],
+                        ','.join([
+                        ','.join([str(item) for item in args[i]]),
+                        ','.join(['%s=%s'%(k,v)
+                                  for k, v in kwargs[i].items()])]))
+            for i in range(len(recorder.SEABORN_ACCESS_LOG))]
+    absent = [',)','(,']
+    for i in range(len(ret)):
+        for j in [0,1]:
+            ret[i] = ret[i].replace(absent[j],absent[j][1-j])
+        ret[i] = ret[i].replace('.init','')
+    return ret
+
+
 class TestClass():
     def __init__(self,a):
         self.a = a
@@ -25,6 +43,7 @@ class TestRecorder(unittest.TestCase):
         self.assertEqual(1, result)
         result = [str(i) for i in self.klass.SEABORN_ACCESS_LOG]
         self.assertListEqual(['init(1)', 'a()'],result)
+        print(generate_calls(self.klass))
 
     def test_null_getattr(self):
         try:
@@ -49,7 +68,7 @@ class TestRecorder(unittest.TestCase):
         self.assertListEqual(['init(1)', 'b(2)', 'b()'],result)
 
     def test_mem_func(self):
-        self.assertEqual("Hello, 2!",self.subject.hello_world(2))
+        self.assertEqual("Hello, 2!",self.subject.hello_world(b=2))
         result = [str(i) for i in self.klass.SEABORN_ACCESS_LOG]
         self.assertListEqual(
             ['init(1)', 'hello_world()', 'hello_world(2)'],result)
