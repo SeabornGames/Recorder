@@ -49,9 +49,10 @@ class TestRecorder(unittest.TestCase):
         self.assertListEqual(['init(1)', 'b(2)', 'b()'],result)
 
     def test_mem_func(self):
-        self.assertEqual("Hello, 1!",self.subject.hello_world())
+        self.assertEqual("Hello, 2!",self.subject.hello_world(2))
         result = [str(i) for i in self.klass.SEABORN_ACCESS_LOG]
-        self.assertListEqual([],result) # Current implementation is incorrect
+        self.assertListEqual(
+            ['init(1)', 'hello_world()', 'hello_world(2)'],result)
 
     def test_ret_mem_func(self):
         _ = self.subject.hello_world

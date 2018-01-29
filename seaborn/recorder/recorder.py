@@ -50,11 +50,13 @@ class SeabornRecorder:
     def __getattr__(self, item):
         attribute_recorder = AccessRecord(self, 'get', item)
         try:
-            ret = getattr(self.SEABORN_OBJ, item, None)
+            ret = getattr(self.SEABORN_OBJ, item)
         except Exception as ex:
             attribute_recorder.exception = ex
             raise
         attribute_recorder.response = ret
+        if inspect.ismethod(ret):
+            return attribute_recorder
         return ret
 
     def __setattr__(self, name, value):
@@ -115,13 +117,13 @@ class AccessRecord:
     def __call__(self, *args, **kwargs):
         new_attribute_recorder = AccessRecord(
             self.parent_recorder, 'call', self.name, *args, **kwargs)
-        ret = getattr(self.parent_recorder.obj, self.name)(*args, **kwargs)
+        ret = getattr(self.parent_recorder.SEABORN_OBJ, self.name)(*args, **kwargs)
         new_attribute_recorder.response = ret
-        if inspect.isclass(self.parent_recorder.obj):
-            if isinstance(ret, self.parent_recorder.obj):
+        if inspect.isclass(self.parent_recorder.SEABORN_OBJ):
+            if isinstance(ret, self.parent_recorder.SEABORN_OBJ):
                 ret = self.parent_recorder(seaborn_recorder_obj=ret)
             # todo review what if it returns a subclass of itself
-        elif isinstance(ret, self.parent_recorder.obj.__class__):
+        elif isinstance(ret, self.parent_recorder.SEABORN_OBJ.__class__):
             ret = self.parent_recorder(seaborn_recorder_obj=ret)
         return ret
 
