@@ -61,7 +61,7 @@ class SeabornRecorder:
 
     def __setattr__(self, name, value):
         if "SEABORN_" in name or name == 'is_recorded_for_seaborn_recorder':
-            setattr(self, name, value)
+            super().__setattr__(name, value)
             return
         attribute_recorder = AccessRecord(self, 'set', name, value)
         try:
