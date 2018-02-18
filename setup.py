@@ -1,11 +1,15 @@
 from setuptools import setup
+import os
+
+with open(os.path.join(os.path.dirname(__file__), 'README.md')) as f:
+    long_description = f.read()
 
 setup(
     name='seaborn-recorder',
     version='0.0.1',
     description='SeabornRecorder will proxy an object and record all'
                 ' all getattr, setattr, method calls, and instantiations',
-    long_description='',
+    long_description=long_description,
     author='Ben Christenson',
     author_email='Python@BenChristenson.com',
     url='https://github.com/SeabornGames/SeabornRecorder',
