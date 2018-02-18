@@ -12,7 +12,7 @@ setup(
     install_requires=[],
     extras_require={
     },
-    packages=['seaborn.recorder'],
+    packages=['seaborn_recorder'],
     license='MIT License',
     classifiers=(
         'Intended Audience :: Developers',

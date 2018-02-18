@@ -3,7 +3,7 @@
         all getattr, setattr, method calls, and instantiations
         
     Example:
-        from seaborn.recorder.recorder import SeabornRecorder
+        from seaborn_recorder.recorder import SeabornRecorder
         SeabornTable = SeabornRecorder.get_seaborn_recorder(SeabornTable)
         table = SeabornTable(data)
         table.deliminator = '/'

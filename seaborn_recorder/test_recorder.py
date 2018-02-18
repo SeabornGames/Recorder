@@ -1,5 +1,5 @@
-from seaborn.recorder.recorder import SeabornRecorder
-from seaborn.calling_function.calling_function import *
+from seaborn_recorder.recorder import SeabornRecorder
+from seaborn_calling_function.calling_function import *
 
 
 class TestRecorder(SeabornRecorder):

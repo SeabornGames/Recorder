@@ -1,4 +1,4 @@
-from seaborn.recorder.recorder import *
+from seaborn_recorder.recorder import *
 import unittest
 
 class TestClass():
