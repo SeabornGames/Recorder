@@ -28,6 +28,11 @@ class TestClass():
     def hello_world(self, b=None):
         return "Hello, %s!"%str(b or self.a)
 
+    def args_kwargs(self, *args, **kwargs):
+        arg = ', '.join([str(i) for i in args])
+        kwarg = ', '.join(['%s=%s'%(k,v) for k, v in kwargs.items()])
+        return '%s, %s'%(arg,kwarg)
+
 
 class TestRecorder(unittest.TestCase):
 
@@ -96,6 +101,10 @@ class TestRecorder(unittest.TestCase):
         self.assertEqual('AttributeError',error)
         result = [str(i) for i in self.klass.SEABORN_ACCESS_LOG]
         self.assertListEqual(['init(1)', 'b()'], result)
+
+    def test_args_kwargs(self):
+        print(self.subject.args_kwargs(1,2,3,4,a=1,b=2,c=3))
+        generate_calls(self.klass)
 
 if __name__ == '__main__':
     unittest.main()

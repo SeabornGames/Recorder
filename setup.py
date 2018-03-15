@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='seaborn-recorder',
-    version='0.0.1',
+	version='0.0.2',
     description='SeabornRecorder will proxy an object and record all'
                 ' all getattr, setattr, method calls, and instantiations',
     long_description='',
