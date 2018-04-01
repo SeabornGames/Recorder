@@ -3,7 +3,7 @@
         all getattr, setattr, method calls, and instantiations
         
     Example:
-        from seaborn_recorder.recorder import SeabornRecorder
+        from seaborn.recorder.recorder import SeabornRecorder
         SeabornTable = SeabornRecorder.get_seaborn_recorder(SeabornTable)
         table = SeabornTable(data)
         table.deliminator = '/'
@@ -37,8 +37,6 @@ class SeabornRecorder:
         self.SEABORN_OBJ = obj
         attribute_recorder.response = self.SEABORN_OBJ
         self.SEABORN_INIT_OBJS.append(self.SEABORN_OBJ)
-        if self.is_recorded_for_seaborn_recorder(attribute_recorder):
-            self.SEABORN_ACCESS_LOG.append(attribute_recorder)
 
     @staticmethod
     def is_recorded_for_seaborn_recorder(attribute_recorder):
@@ -52,16 +50,18 @@ class SeabornRecorder:
     def __getattr__(self, item):
         attribute_recorder = AccessRecord(self, 'get', item)
         try:
-            ret = getattr(self.SEABORN_OBJ, item, None)
+            ret = getattr(self.SEABORN_OBJ, item)
         except Exception as ex:
             attribute_recorder.exception = ex
             raise
         attribute_recorder.response = ret
+        if inspect.ismethod(ret):
+            return attribute_recorder
         return ret
 
     def __setattr__(self, name, value):
         if "SEABORN_" in name or name == 'is_recorded_for_seaborn_recorder':
-            setattr(self, name, value)
+            super().__setattr__(name, value)
             return
         attribute_recorder = AccessRecord(self, 'set', name, value)
         try:
@@ -117,13 +117,13 @@ class AccessRecord:
     def __call__(self, *args, **kwargs):
         new_attribute_recorder = AccessRecord(
             self.parent_recorder, 'call', self.name, *args, **kwargs)
-        ret = getattr(self.parent_recorder.obj, self.name)(*args, **kwargs)
+        ret = getattr(self.parent_recorder.SEABORN_OBJ, self.name)(*args, **kwargs)
         new_attribute_recorder.response = ret
-        if inspect.isclass(self.parent_recorder.obj):
-            if isinstance(ret, self.parent_recorder.obj):
+        if inspect.isclass(self.parent_recorder.SEABORN_OBJ):
+            if isinstance(ret, self.parent_recorder.SEABORN_OBJ):
                 ret = self.parent_recorder(seaborn_recorder_obj=ret)
             # todo review what if it returns a subclass of itself
-        elif isinstance(ret, self.parent_recorder.obj.__class__):
+        elif isinstance(ret, self.parent_recorder.SEABORN_OBJ.__class__):
             ret = self.parent_recorder(seaborn_recorder_obj=ret)
         return ret
 
